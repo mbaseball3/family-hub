@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Family Hub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fraunces:ital,opsz,wght@0,9..144,300;1,9..144,300&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #fdf6ee;
+      --surface: #ffffff;
+      --surface2: #f5ece0;
+      --border: #e8d9c8;
+      --text: #2c1f0e;
+      --text-muted: #8a7060;
+      --accent: #d4621a;
+      --accent-soft: #f5dece;
+
+      /* Person colors */
+      --payton:  #5b8dd9;
+      --hailey:  #d45ba3;
+      --aubrey:  #6abf8a;
+      --daniel:  #e07b3c;
+      --wife:    #9b6fd4;
+      --family:  #d4a435;
+
+      --comp:    #c0392b;
+      --practice:#2980b9;
+
+      --radius: 14px;
+      --shadow: 0 2px 12px rgba(44,31,14,0.08);
+      --shadow-lg: 0 8px 32px rgba(44,31,14,0.14);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── AUTH SCREEN ── */
+    #auth-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+      background: linear-gradient(145deg, #fdf6ee 0%, #f0e4d2 100%);
+    }
+
+    .auth-card {
+      background: var(--surface);
+      border-radius: 24px;
+      padding: 3rem 2.5rem;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+      max-width: 420px;
+      width: 100%;
+      border: 1px solid var(--border);
+    }
+
+    .auth-title {
+      font-family: 'Fraunces', serif;
+      font-size: 2.6rem;
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 0.25rem;
+      line-height: 1.1;
+    }
+
+    .auth-subtitle {
+      color: var(--text-muted);
+      font-size: 1rem;
+      margin-bottom: 2.5rem;
+      font-weight: 600;
+    }
+
+    .auth-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .auth-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+    }
+
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 50px;
+      padding: 0.85rem 2rem;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    .google-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow);
+    }
+
+    .google-btn svg { flex-shrink: 0; }
+
+    .auth-note {
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    #access-denied {
+      display: none;
+      margin-top: 1rem;
+      padding: 0.75rem 1rem;
+      background: #fdecea;
+      border: 1px solid #f5c6cb;
+      border-radius: 10px;
+      color: #c0392b;
+      font-size: 0.85rem;
+      font-weight: 700;
+    }
+
+    /* ── LOADING ── */
+    #loading-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    /* ── MAIN APP ── */
+    #app { display: none; flex-direction: column; min-height: 100vh; }
+
+    /* Header */
+    .app-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 8px rgba(44,31,14,0.06);
+    }
+
+    .header-brand {
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem;
+      font-weight: 300;
+      color: var(--text);
+    }
+
+    .header-brand span { color: var(--accent); }
+
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .header-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid var(--border);
+    }
+
+    .sign-out-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 0.3rem 0.75rem;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sign-out-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Tab nav */
+    .tab-nav {
+      display: flex;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 1.5rem;
+      gap: 0;
+    }
+
+    .tab-btn {
+      padding: 0.9rem 1.5rem;
+      border: none;
+      background: none;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .tab-btn.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    .tab-btn:hover:not(.active) { color: var(--text); }
+
+    /* Main content */
+    .tab-content { display: none; padding: 1.5rem; flex: 1; }
+    .tab-content.active { display: block; }
+
+    /* ── CALENDAR TAB ── */
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .cal-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .cal-month-label {
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem;
+      font-weight: 300;
+      min-width: 200px;
+      text-align: center;
+    }
+
+    .icon-btn {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all 0.2s;
+      color: var(--text);
+    }
+
+    .icon-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+    .add-event-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 0.6rem 1.25rem;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: all 0.2s;
+    }
+
+    .add-event-btn:hover { background: #b5511a; transform: translateY(-1px); box-shadow: var(--shadow); }
+
+    /* Legend */
+    .cal-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    .legend-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+
+    /* Grid */
+    .cal-grid {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .cal-weekday {
+      padding: 0.6rem 0.25rem;
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .cal-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+    }
+
+    .cal-day {
+      min-height: 90px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 0.4rem;
+      cursor: pointer;
+      transition: background 0.15s;
+      position: relative;
+    }
+
+    .cal-day:nth-child(7n) { border-right: none; }
+    .cal-day:hover { background: var(--accent-soft); }
+    .cal-day.today { background: #fff8f3; }
+    .cal-day.today .day-num { 
+      background: var(--accent); 
+      color: #fff; 
+      border-radius: 50%;
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .cal-day.other-month .day-num { color: var(--border); }
+    .cal-day.other-month { background: #faf6f1; }
+
+    .day-num {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+      width: 24px; height: 24px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .day-events { display: flex; flex-direction: column; gap: 2px; }
+
+    .day-event-chip {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 4px;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+    }
+
+    .more-events {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      font-weight: 700;
+      padding: 1px 4px;
+    }
+
+    /* ── EVENT MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(44,31,14,0.45);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    .modal-overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: var(--shadow-lg);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.4rem;
+      font-weight: 300;
+      margin-bottom: 1.25rem;
+      color: var(--text);
+    }
+
+    .form-group { margin-bottom: 1rem; }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.35rem;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 0.65rem 0.9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: var(--bg);
+      transition: border-color 0.2s;
+      outline: none;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--accent);
+    }
+
+    .form-textarea { resize: vertical; min-height: 70px; }
+
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+    .modal-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      justify-content: flex-end;
+    }
+
+    .btn-secondary {
+      padding: 0.6rem 1.25rem;
+      border: 1.5px solid var(--border);
+      border-radius: 50px;
+      background: none;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover { border-color: var(--text-muted); color: var(--text); }
+
+    .btn-danger {
+      padding: 0.6rem 1.25rem;
+      border: 1.5px solid #f5c6cb;
+      border-radius: 50px;
+      background: none;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #c0392b;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-danger:hover { background: #fdecea; }
+
+    .btn-primary {
+      padding: 0.6rem 1.5rem;
+      border: none;
+      border-radius: 50px;
+      background: var(--accent);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #fff;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary:hover { background: #b5511a; }
+
+    /* ── EVENT LIST (day view in modal) ── */
+    .day-event-list { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1.25rem; }
+
+    .event-list-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+    }
+
+    .event-color-bar {
+      width: 4px;
+      border-radius: 2px;
+      align-self: stretch;
+      min-height: 28px;
+      flex-shrink: 0;
+    }
+
+    .event-item-info { flex: 1; }
+    .event-item-title { font-weight: 800; font-size: 0.95rem; }
+    .event-item-meta { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; margin-top: 0.15rem; }
+
+    .event-item-actions { display: flex; gap: 0.35rem; }
+
+    .event-mini-btn {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      transition: all 0.2s;
+    }
+
+    .event-mini-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .event-mini-btn.delete:hover { border-color: #c0392b; color: #c0392b; }
+
+    /* ── MEALS TAB ── */
+    .meals-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .meals-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.5rem;
+      font-weight: 300;
+    }
+
+    .meals-search {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 50px;
+      padding: 0.5rem 1rem;
+      transition: border-color 0.2s;
+    }
+
+    .meals-search:focus-within { border-color: var(--accent); }
+
+    .meals-search input {
+      border: none;
+      outline: none;
+      background: none;
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      width: 160px;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .filter-chip {
+      padding: 0.35rem 0.85rem;
+      border-radius: 50px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      font-family: 'Nunito', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-chip.active {
+      background: var(--accent);
+      color: #fff;
+      border-color: var(--accent);
+    }
+
+    .meals-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1rem;
+    }
+
+    .meal-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .meal-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .meal-card-top {
+      height: 6px;
+    }
+
+    .meal-card-body { padding: 1rem; }
+
+    .meal-name {
+      font-weight: 900;
+      font-size: 1rem;
+      margin-bottom: 0.3rem;
+      color: var(--text);
+    }
+
+    .meal-category {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+    }
+
+    .meal-notes {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 0.75rem;
+    }
+
+    .meal-favorites {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+    }
+
+    .fav-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 50px;
+      font-size: 0.73rem;
+      font-weight: 800;
+      color: #fff;
+    }
+
+    .meal-card-footer {
+      padding: 0.5rem 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--surface2);
+    }
+
+    .meal-date {
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .meal-actions { display: flex; gap: 0.3rem; }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state .empty-icon { font-size: 3rem; margin-bottom: 1rem; }
+    .empty-state h3 { font-family: 'Fraunces', serif; font-size: 1.3rem; font-weight: 300; margin-bottom: 0.5rem; color: var(--text); }
+    .empty-state p { font-size: 0.9rem; }
+
+    /* ── UPCOMING EVENTS SIDEBAR STRIP ── */
+    .upcoming-strip {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 1rem;
+      margin-bottom: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+
+    .upcoming-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-muted);
+      margin-bottom: 0.6rem;
+    }
+
+    .upcoming-list { display: flex; gap: 0.6rem; overflow-x: auto; padding-bottom: 0.25rem; }
+    .upcoming-list::-webkit-scrollbar { height: 3px; }
+    .upcoming-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    .upcoming-pill {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.75rem;
+      border-radius: 50px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .cal-day { min-height: 60px; }
+      .tab-btn { padding: 0.75rem 0.9rem; font-size: 0.85rem; }
+      .form-row { grid-template-columns: 1fr; }
+      .cal-month-label { font-size: 1.1rem; min-width: 150px; }
+      .meals-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loading-screen">Loading The Family Hub…</div>
+
+<!-- Auth Screen -->
+<div id="auth-screen" style="display:none">
+  <div class="auth-card">
+    <div class="auth-dots">
+      <div class="auth-dot" style="background:var(--payton)"></div>
+      <div class="auth-dot" style="background:var(--hailey)"></div>
+      <div class="auth-dot" style="background:var(--aubrey)"></div>
+      <div class="auth-dot" style="background:var(--daniel)"></div>
+      <div class="auth-dot" style="background:var(--wife)"></div>
+    </div>
+    <div class="auth-title">The Family<br/>Hub</div>
+    <div class="auth-subtitle">Schedules &amp; Meals</div>
+    <button class="google-btn" onclick="signInWithGoogle()">
+      <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+      Sign in with Google
+    </button>
+    <div id="access-denied">⛔ Your Google account doesn't have access. Contact Daniel to be added.</div>
+    <p class="auth-note">🔒 Private family access only.<br/>Only approved Google accounts can sign in.</p>
+  </div>
+</div>
+
+<!-- Main App -->
+<div id="app">
+  <header class="app-header">
+    <div class="header-brand">The Family <span>Hub</span></div>
+    <div class="header-user">
+      <img id="user-avatar" class="header-avatar" src="" alt="" onerror="this.style.display='none'" />
+      <span id="user-name"></span>
+      <button class="sign-out-btn" onclick="signOut()">Sign out</button>
+    </div>
+  </header>
+
+  <nav class="tab-nav">
+    <button class="tab-btn active" onclick="switchTab('calendar', this)">📅 Calendar</button>
+    <button class="tab-btn" onclick="switchTab('meals', this)">🍽️ Meals</button>
+  </nav>
+
+  <!-- CALENDAR TAB -->
+  <div id="tab-calendar" class="tab-content active">
+
+    <!-- Upcoming strip -->
+    <div class="upcoming-strip">
+      <div class="upcoming-label">Coming Up</div>
+      <div class="upcoming-list" id="upcoming-list">
+        <span style="font-size:0.82rem;color:var(--text-muted);font-weight:600">No upcoming events</span>
+      </div>
+    </div>
+
+    <div class="calendar-header">
+      <div class="cal-nav">
+        <button class="icon-btn" onclick="changeMonth(-1)">‹</button>
+        <div class="cal-month-label" id="month-label">Month Year</div>
+        <button class="icon-btn" onclick="changeMonth(1)">›</button>
+      </div>
+      <button class="add-event-btn" onclick="openAddEvent()">+ Add Event</button>
+    </div>
+
+    <div class="cal-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--payton)"></div>Payton</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--hailey)"></div>Hailey</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--aubrey)"></div>Aubrey</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--daniel)"></div>Daniel</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--wife)"></div>Mom</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--family)"></div>Family</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--comp)"></div>Competition</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--practice)"></div>Practice</div>
+    </div>
+
+    <div class="cal-grid">
+      <div class="cal-weekdays">
+        <div class="cal-weekday">Sun</div>
+        <div class="cal-weekday">Mon</div>
+        <div class="cal-weekday">Tue</div>
+        <div class="cal-weekday">Wed</div>
+        <div class="cal-weekday">Thu</div>
+        <div class="cal-weekday">Fri</div>
+        <div class="cal-weekday">Sat</div>
+      </div>
+      <div class="cal-days" id="cal-days"></div>
+    </div>
+  </div>
+
+  <!-- MEALS TAB -->
+  <div id="tab-meals" class="tab-content">
+    <div class="meals-header">
+      <div class="meals-title">Family Meals</div>
+      <div style="display:flex;gap:0.6rem;align-items:center;flex-wrap:wrap">
+        <div class="meals-search">
+          <span>🔍</span>
+          <input type="text" id="meal-search" placeholder="Search meals…" oninput="filterMeals()" />
+        </div>
+        <button class="add-event-btn" onclick="openAddMeal()">+ Add Meal</button>
+      </div>
+    </div>
+
+    <div class="filter-chips" id="meal-filters">
+      <button class="filter-chip active" data-filter="all" onclick="setMealFilter('all', this)">All</button>
+      <button class="filter-chip" data-filter="Payton" onclick="setMealFilter('Payton', this)">⭐ Payton</button>
+      <button class="filter-chip" data-filter="Hailey" onclick="setMealFilter('Hailey', this)">⭐ Hailey</button>
+      <button class="filter-chip" data-filter="Aubrey" onclick="setMealFilter('Aubrey', this)">⭐ Aubrey</button>
+      <button class="filter-chip" data-filter="Daniel" onclick="setMealFilter('Daniel', this)">⭐ Daniel</button>
+      <button class="filter-chip" data-filter="Mom" onclick="setMealFilter('Mom', this)">⭐ Mom</button>
+    </div>
+
+    <div class="meals-grid" id="meals-grid">
+      <div class="empty-state">
+        <div class="empty-icon">🍽️</div>
+        <h3>No meals yet</h3>
+        <p>Start adding family favorites!</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EVENT MODAL -->
+<div class="modal-overlay" id="event-modal">
+  <div class="modal">
+    <div class="modal-title" id="event-modal-title">Add Event</div>
+
+    <!-- Day events list (shown when clicking a day) -->
+    <div id="day-events-section" style="display:none">
+      <div class="day-event-list" id="day-events-list"></div>
+      <div style="border-top:1px solid var(--border);margin-bottom:1rem;padding-top:1rem;">
+        <div style="font-size:0.8rem;font-weight:800;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.75rem">Add New Event</div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Title *</label>
+      <input class="form-input" id="evt-title" placeholder="e.g. Cheer Practice, Soccer Game…" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Date *</label>
+        <input class="form-input" id="evt-date" type="date" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Time (optional)</label>
+        <input class="form-input" id="evt-time" type="time" />
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">End Date (optional)</label>
+        <input class="form-input" id="evt-end-date" type="date" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">End Time (optional)</label>
+        <input class="form-input" id="evt-end-time" type="time" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category / Person</label>
+      <select class="form-select" id="evt-category">
+        <option value="family">👨‍👩‍👧‍👧 Family</option>
+        <option value="payton">Payton</option>
+        <option value="hailey">Hailey</option>
+        <option value="aubrey">Aubrey</option>
+        <option value="daniel">Daniel</option>
+        <option value="wife">Mom</option>
+        <option value="practice">🏅 Cheer Practice</option>
+        <option value="comp">🏆 Competition</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Recurrence</label>
+      <select class="form-select" id="evt-recur">
+        <option value="none">No repeat</option>
+        <option value="weekly">Weekly (same day)</option>
+        <option value="biweekly">Every 2 weeks</option>
+        <option value="monthly">Monthly</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea class="form-textarea" id="evt-notes" placeholder="Location, reminders, details…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('event-modal')">Cancel</button>
+      <button class="btn-primary" onclick="saveEvent()">Save Event</button>
+    </div>
+  </div>
+</div>
+
+<!-- MEAL MODAL -->
+<div class="modal-overlay" id="meal-modal">
+  <div class="modal">
+    <div class="modal-title" id="meal-modal-title">Add Meal</div>
+    <div class="form-group">
+      <label class="form-label">Meal Name *</label>
+      <input class="form-input" id="meal-name" placeholder="e.g. Taco Tuesday, Grilled Chicken…" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Category</label>
+        <select class="form-select" id="meal-cat">
+          <option value="Dinner">Dinner</option>
+          <option value="Lunch">Lunch</option>
+          <option value="Breakfast">Breakfast</option>
+          <option value="Snack">Snack</option>
+          <option value="Dessert">Dessert</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Date Made</label>
+        <input class="form-input" id="meal-date" type="date" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Who loved it most? (select all that apply)</label>
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.25rem" id="fav-checkboxes">
+        <label style="display:flex;align-items:center;gap:0.35rem;cursor:pointer;font-weight:700;font-size:0.88rem">
+          <input type="checkbox" value="Payton" style="accent-color:var(--payton)" /> Payton
+        </label>
+        <label style="display:flex;align-items:center;gap:0.35rem;cursor:pointer;font-weight:700;font-size:0.88rem">
+          <input type="checkbox" value="Hailey" style="accent-color:var(--hailey)" /> Hailey
+        </label>
+        <label style="display:flex;align-items:center;gap:0.35rem;cursor:pointer;font-weight:700;font-size:0.88rem">
+          <input type="checkbox" value="Aubrey" style="accent-color:var(--aubrey)" /> Aubrey
+        </label>
+        <label style="display:flex;align-items:center;gap:0.35rem;cursor:pointer;font-weight:700;font-size:0.88rem">
+          <input type="checkbox" value="Daniel" style="accent-color:var(--daniel)" /> Daniel
+        </label>
+        <label style="display:flex;align-items:center;gap:0.35rem;cursor:pointer;font-weight:700;font-size:0.88rem">
+          <input type="checkbox" value="Mom" style="accent-color:var(--wife)" /> Mom
+        </label>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes / Recipe tips</label>
+      <textarea class="form-textarea" id="meal-notes" placeholder="Where to get it, how to make it, what to tweak…"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal('meal-modal')">Cancel</button>
+      <button class="btn-danger" id="meal-delete-btn" style="display:none" onclick="deleteMeal()">Delete</button>
+      <button class="btn-primary" onclick="saveMeal()">Save Meal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Firebase SDKs -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut as fbSignOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, collection, doc, addDoc, setDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // ── CONFIGURATION ── Replace with your Firebase project config ──
+  const firebaseConfig = {
+    apiKey:            "AIzaSyAsouMmCbYgQrkmh1mNcWVM0CchUqvTR-Y",
+    authDomain:        "family-hub-d3dcc.firebaseapp.com",
+    projectId:         "family-hub-d3dcc",
+    storageBucket:     "family-hub-d3dcc.firebasestorage.app",
+    messagingSenderId: "153502606502",
+    appId:             "1:153502606502:web:e005f88aaa8fd5dc18c067"
+  };
+
+  // ── ALLOWED EMAILS — add all family Google accounts ──
+  const ALLOWED_EMAILS = [
+    "REPLACE_WITH_YOUR_EMAIL@gmail.com",
+    "REPLACE_WITH_WIFE_EMAIL@gmail.com"
+    // Add more as needed
+  ];
+
+  // ── Init Firebase ──
+  const app      = initializeApp(firebaseConfig);
+  const auth     = getAuth(app);
+  const db       = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  // ── State ──
+  let currentMonth = new Date().getMonth();
+  let currentYear  = new Date().getFullYear();
+  let allEvents    = [];
+  let allMeals     = [];
+  let editingEventId = null;
+  let editingMealId  = null;
+  let currentMealFilter = 'all';
+  let currentMealSearch = '';
+
+  // ── Color map ──
+  const COLORS = {
+    payton: '#5b8dd9', hailey: '#d45ba3', aubrey: '#6abf8a',
+    daniel: '#e07b3c', wife: '#9b6fd4', family: '#d4a435',
+    comp: '#c0392b', practice: '#2980b9'
+  };
+
+  const CATEGORY_LABELS = {
+    payton: 'Payton', hailey: 'Hailey', aubrey: 'Aubrey',
+    daniel: 'Daniel', wife: 'Mom', family: 'Family',
+    comp: '🏆 Competition', practice: '🏅 Practice'
+  };
+
+  const PERSON_COLORS = { Payton: '#5b8dd9', Hailey: '#d45ba3', Aubrey: '#6abf8a', Daniel: '#e07b3c', Mom: '#9b6fd4' };
+
+  // ── Auth ──
+  window.signInWithGoogle = () => {
+    signInWithRedirect(auth, provider);
+  };
+
+  window.signOut = () => fbSignOut(auth);
+
+  // Handle the redirect result when returning from Google
+  getRedirectResult(auth).then(result => {
+    if (result?.user) {
+      const email = result.user.email;
+      if (!ALLOWED_EMAILS.includes(email)) {
+        fbSignOut(auth);
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('auth-screen').style.display = 'flex';
+        document.getElementById('access-denied').style.display = 'block';
+      }
+    }
+  }).catch(e => {
+    console.error('Redirect error:', e);
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('auth-screen').style.display = 'flex';
+  });
+
+  onAuthStateChanged(auth, user => {
+    document.getElementById('loading-screen').style.display = 'none';
+    if (user && ALLOWED_EMAILS.includes(user.email)) {
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      document.getElementById('user-name').textContent = user.displayName?.split(' ')[0] || '';
+      document.getElementById('user-avatar').src = user.photoURL || '';
+      subscribeToData();
+    } else {
+      document.getElementById('auth-screen').style.display = 'flex';
+      document.getElementById('app').style.display = 'none';
+    }
+  });
+
+  // ── Firestore subscriptions ──
+  function subscribeToData() {
+    onSnapshot(query(collection(db, 'events'), orderBy('date')), snap => {
+      allEvents = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderCalendar();
+      renderUpcoming();
+    });
+    onSnapshot(query(collection(db, 'meals'), orderBy('createdAt', 'desc')), snap => {
+      allMeals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderMeals();
+    });
+  }
+
+  // ── Tab switching ──
+  window.switchTab = (tab, btn) => {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    btn.classList.add('active');
+  };
+
+  // ── Modal helpers ──
+  window.closeModal = (id) => {
+    document.getElementById(id).classList.remove('open');
+    editingEventId = null;
+    editingMealId  = null;
+  };
+
+  document.querySelectorAll('.modal-overlay').forEach(o => {
+    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+  });
+
+  // ── Calendar ──
+  window.changeMonth = (dir) => {
+    currentMonth += dir;
+    if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+    if (currentMonth < 0)  { currentMonth = 11; currentYear--; }
+    renderCalendar();
+  };
+
+  function renderCalendar() {
+    const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    document.getElementById('month-label').textContent = `${monthNames[currentMonth]} ${currentYear}`;
+
+    const firstDay  = new Date(currentYear, currentMonth, 1).getDay();
+    const daysCount = new Date(currentYear, currentMonth + 1, 0).getDate();
+    const today     = new Date();
+    const container = document.getElementById('cal-days');
+    container.innerHTML = '';
+
+    const eventsInMonth = getExpandedEvents(currentYear, currentMonth);
+
+    for (let i = 0; i < firstDay; i++) {
+      const prevDay = new Date(currentYear, currentMonth, -firstDay + i + 1);
+      const cell = buildDayCell(prevDay.getDate(), true, false, [], prevDay);
+      container.appendChild(cell);
+    }
+
+    for (let d = 1; d <= daysCount; d++) {
+      const dateObj = new Date(currentYear, currentMonth, d);
+      const isToday = (d === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear());
+      const dateStr = formatDate(dateObj);
+      const dayEvts = eventsInMonth.filter(e => e.date === dateStr);
+      container.appendChild(buildDayCell(d, false, isToday, dayEvts, dateObj));
+    }
+
+    const remaining = 42 - (firstDay + daysCount);
+    for (let i = 1; i <= remaining; i++) {
+      const nextDay = new Date(currentYear, currentMonth + 1, i);
+      container.appendChild(buildDayCell(i, true, false, [], nextDay));
+    }
+  }
+
+  function buildDayCell(dayNum, otherMonth, isToday, events, dateObj) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-day' + (otherMonth ? ' other-month' : '') + (isToday ? ' today' : '');
+
+    const numEl = document.createElement('div');
+    numEl.className = 'day-num';
+    numEl.textContent = dayNum;
+    cell.appendChild(numEl);
+
+    const evtContainer = document.createElement('div');
+    evtContainer.className = 'day-events';
+
+    const maxShow = 3;
+    events.slice(0, maxShow).forEach(evt => {
+      const chip = document.createElement('div');
+      chip.className = 'day-event-chip';
+      chip.style.background = COLORS[evt.category] || COLORS.family;
+      chip.textContent = evt.title;
+      chip.title = evt.notes || '';
+      evtContainer.appendChild(chip);
+    });
+
+    if (events.length > maxShow) {
+      const more = document.createElement('div');
+      more.className = 'more-events';
+      more.textContent = `+${events.length - maxShow} more`;
+      evtContainer.appendChild(more);
+    }
+
+    cell.appendChild(evtContainer);
+    cell.addEventListener('click', () => openDayModal(dateObj, events));
+    return cell;
+  }
+
+  function renderUpcoming() {
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const in30 = new Date(today); in30.setDate(in30.getDate() + 30);
+    const container = document.getElementById('upcoming-list');
+    container.innerHTML = '';
+
+    const upcoming = [];
+    for (let m = 0; m <= 1; m++) {
+      const yr = currentYear + (currentMonth + m > 11 ? 1 : 0);
+      const mo = (currentMonth + m) % 12;
+      getExpandedEvents(yr, mo).forEach(e => {
+        const d = new Date(e.date + 'T00:00:00');
+        if (d >= today && d <= in30) upcoming.push({ ...e, dateObj: d });
+      });
+    }
+
+    upcoming.sort((a,b) => a.dateObj - b.dateObj).slice(0,10).forEach(e => {
+      const pill = document.createElement('div');
+      pill.className = 'upcoming-pill';
+      pill.style.background = COLORS[e.category] || COLORS.family;
+      const days = Math.round((e.dateObj - today) / 86400000);
+      const when = days === 0 ? 'Today' : days === 1 ? 'Tomorrow' : `in ${days}d`;
+      pill.innerHTML = `<span>${when}</span><span>${e.title}</span>`;
+      container.appendChild(pill);
+    });
+
+    if (!container.children.length) {
+      container.innerHTML = '<span style="font-size:0.82rem;color:var(--text-muted);font-weight:600">No events in the next 30 days</span>';
+    }
+  }
+
+  function getExpandedEvents(yr, mo) {
+    const result = [];
+    const daysInMonth = new Date(yr, mo + 1, 0).getDate();
+
+    allEvents.forEach(evt => {
+      const base = new Date(evt.date + 'T00:00:00');
+
+      if (evt.recur === 'none' || !evt.recur) {
+        if (base.getFullYear() === yr && base.getMonth() === mo) result.push(evt);
+        return;
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const candidate = new Date(yr, mo, d);
+        if (candidate < base) continue;
+        const diff = Math.round((candidate - base) / 86400000);
+        let match = false;
+        if (evt.recur === 'weekly' && diff % 7 === 0) match = true;
+        if (evt.recur === 'biweekly' && diff % 14 === 0) match = true;
+        if (evt.recur === 'monthly' && base.getDate() === d) match = true;
+        if (match) result.push({ ...evt, date: formatDate(candidate) });
+      }
+    });
+
+    return result;
+  }
+
+  // ── Day modal (view + add) ──
+  function openDayModal(dateObj, events) {
+    editingEventId = null;
+    const modal = document.getElementById('event-modal');
+    const title = document.getElementById('event-modal-title');
+    const daySection = document.getElementById('day-events-section');
+    const dayList = document.getElementById('day-events-list');
+
+    const label = dateObj.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+    title.textContent = label;
+    document.getElementById('evt-date').value = formatDate(dateObj);
+    document.getElementById('evt-title').value = '';
+    document.getElementById('evt-time').value = '';
+    document.getElementById('evt-end-date').value = '';
+    document.getElementById('evt-end-time').value = '';
+    document.getElementById('evt-notes').value = '';
+    document.getElementById('evt-category').value = 'family';
+    document.getElementById('evt-recur').value = 'none';
+
+    if (events.length > 0) {
+      daySection.style.display = 'block';
+      dayList.innerHTML = '';
+      events.forEach(evt => {
+        const item = document.createElement('div');
+        item.className = 'event-list-item';
+        const color = COLORS[evt.category] || COLORS.family;
+        item.innerHTML = `
+          <div class="event-color-bar" style="background:${color}"></div>
+          <div class="event-item-info">
+            <div class="event-item-title">${evt.title}</div>
+            <div class="event-item-meta">${CATEGORY_LABELS[evt.category] || evt.category}${evt.time ? ' · ' + fmt12(evt.time) : ''}${evt.notes ? ' · ' + evt.notes : ''}</div>
+          </div>
+          <div class="event-item-actions">
+            <button class="event-mini-btn" title="Edit" onclick="editEvent('${evt.id}')">✏️</button>
+            <button class="event-mini-btn delete" title="Delete" onclick="confirmDeleteEvent('${evt.id}')">🗑️</button>
+          </div>`;
+        dayList.appendChild(item);
+      });
+    } else {
+      daySection.style.display = 'none';
+    }
+
+    modal.classList.add('open');
+  }
+
+  window.openAddEvent = () => {
+    editingEventId = null;
+    document.getElementById('event-modal-title').textContent = 'Add Event';
+    document.getElementById('day-events-section').style.display = 'none';
+    document.getElementById('evt-title').value = '';
+    document.getElementById('evt-date').value = formatDate(new Date());
+    document.getElementById('evt-time').value = '';
+    document.getElementById('evt-end-date').value = '';
+    document.getElementById('evt-end-time').value = '';
+    document.getElementById('evt-notes').value = '';
+    document.getElementById('evt-category').value = 'family';
+    document.getElementById('evt-recur').value = 'none';
+    document.getElementById('event-modal').classList.add('open');
+  };
+
+  window.editEvent = (id) => {
+    const evt = allEvents.find(e => e.id === id);
+    if (!evt) return;
+    editingEventId = id;
+    document.getElementById('event-modal-title').textContent = 'Edit Event';
+    document.getElementById('day-events-section').style.display = 'none';
+    document.getElementById('evt-title').value    = evt.title || '';
+    document.getElementById('evt-date').value     = evt.date || '';
+    document.getElementById('evt-time').value     = evt.time || '';
+    document.getElementById('evt-end-date').value = evt.endDate || '';
+    document.getElementById('evt-end-time').value = evt.endTime || '';
+    document.getElementById('evt-notes').value    = evt.notes || '';
+    document.getElementById('evt-category').value = evt.category || 'family';
+    document.getElementById('evt-recur').value    = evt.recur || 'none';
+    document.getElementById('event-modal').classList.add('open');
+  };
+
+  window.confirmDeleteEvent = async (id) => {
+    if (confirm('Delete this event?')) {
+      await deleteDoc(doc(db, 'events', id));
+      closeModal('event-modal');
+    }
+  };
+
+  window.saveEvent = async () => {
+    const title = document.getElementById('evt-title').value.trim();
+    const date  = document.getElementById('evt-date').value;
+    if (!title || !date) { alert('Please fill in title and date.'); return; }
+
+    const data = {
+      title,
+      date,
+      time:     document.getElementById('evt-time').value,
+      endDate:  document.getElementById('evt-end-date').value,
+      endTime:  document.getElementById('evt-end-time').value,
+      category: document.getElementById('evt-category').value,
+      recur:    document.getElementById('evt-recur').value,
+      notes:    document.getElementById('evt-notes').value.trim(),
+      updatedAt: serverTimestamp()
+    };
+
+    if (editingEventId) {
+      await setDoc(doc(db, 'events', editingEventId), data, { merge: true });
+    } else {
+      data.createdAt = serverTimestamp();
+      await addDoc(collection(db, 'events'), data);
+    }
+    closeModal('event-modal');
+  };
+
+  // ── Meals ──
+  window.openAddMeal = () => {
+    editingMealId = null;
+    document.getElementById('meal-modal-title').textContent = 'Add Meal';
+    document.getElementById('meal-name').value  = '';
+    document.getElementById('meal-cat').value   = 'Dinner';
+    document.getElementById('meal-date').value  = formatDate(new Date());
+    document.getElementById('meal-notes').value = '';
+    document.getElementById('meal-delete-btn').style.display = 'none';
+    document.querySelectorAll('#fav-checkboxes input').forEach(cb => cb.checked = false);
+    document.getElementById('meal-modal').classList.add('open');
+  };
+
+  window.editMeal = (id) => {
+    const meal = allMeals.find(m => m.id === id);
+    if (!meal) return;
+    editingMealId = id;
+    document.getElementById('meal-modal-title').textContent = 'Edit Meal';
+    document.getElementById('meal-name').value  = meal.name || '';
+    document.getElementById('meal-cat').value   = meal.category || 'Dinner';
+    document.getElementById('meal-date').value  = meal.date || '';
+    document.getElementById('meal-notes').value = meal.notes || '';
+    document.getElementById('meal-delete-btn').style.display = 'inline-flex';
+    document.querySelectorAll('#fav-checkboxes input').forEach(cb => {
+      cb.checked = (meal.favorites || []).includes(cb.value);
+    });
+    document.getElementById('meal-modal').classList.add('open');
+  };
+
+  window.deleteMeal = async () => {
+    if (editingMealId && confirm('Delete this meal?')) {
+      await deleteDoc(doc(db, 'meals', editingMealId));
+      closeModal('meal-modal');
+    }
+  };
+
+  window.saveMeal = async () => {
+    const name = document.getElementById('meal-name').value.trim();
+    if (!name) { alert('Please enter a meal name.'); return; }
+
+    const favorites = [...document.querySelectorAll('#fav-checkboxes input:checked')].map(cb => cb.value);
+
+    const data = {
+      name,
+      category:  document.getElementById('meal-cat').value,
+      date:      document.getElementById('meal-date').value,
+      notes:     document.getElementById('meal-notes').value.trim(),
+      favorites,
+      updatedAt: serverTimestamp()
+    };
+
+    if (editingMealId) {
+      await setDoc(doc(db, 'meals', editingMealId), data, { merge: true });
+    } else {
+      data.createdAt = serverTimestamp();
+      await addDoc(collection(db, 'meals'), data);
+    }
+    closeModal('meal-modal');
+  };
+
+  window.setMealFilter = (filter, btn) => {
+    currentMealFilter = filter;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    renderMeals();
+  };
+
+  window.filterMeals = () => {
+    currentMealSearch = document.getElementById('meal-search').value.toLowerCase();
+    renderMeals();
+  };
+
+  function renderMeals() {
+    const grid = document.getElementById('meals-grid');
+    let meals = [...allMeals];
+
+    if (currentMealFilter !== 'all') {
+      meals = meals.filter(m => (m.favorites || []).includes(currentMealFilter));
+    }
+
+    if (currentMealSearch) {
+      meals = meals.filter(m =>
+        m.name.toLowerCase().includes(currentMealSearch) ||
+        (m.notes || '').toLowerCase().includes(currentMealSearch)
+      );
+    }
+
+    if (!meals.length) {
+      grid.innerHTML = `<div class="empty-state">
+        <div class="empty-icon">🍽️</div>
+        <h3>No meals found</h3>
+        <p>${allMeals.length ? 'Try a different filter or search.' : 'Add your first family meal!'}</p>
+      </div>`;
+      return;
+    }
+
+    grid.innerHTML = '';
+    meals.forEach(meal => {
+      const card = document.createElement('div');
+      card.className = 'meal-card';
+
+      // Pick top color from first favorite, or default
+      const topColor = meal.favorites?.length ? (PERSON_COLORS[meal.favorites[0]] || '#d4a435') : '#d4a435';
+
+      const favsHtml = (meal.favorites || []).map(f =>
+        `<div class="fav-badge" style="background:${PERSON_COLORS[f] || '#aaa'}">⭐ ${f}</div>`
+      ).join('');
+
+      card.innerHTML = `
+        <div class="meal-card-top" style="background:${topColor}"></div>
+        <div class="meal-card-body">
+          <div class="meal-name">${meal.name}</div>
+          <div class="meal-category">${meal.category}</div>
+          ${meal.notes ? `<div class="meal-notes">${meal.notes}</div>` : ''}
+          ${favsHtml ? `<div class="meal-favorites">${favsHtml}</div>` : ''}
+        </div>
+        <div class="meal-card-footer">
+          <span class="meal-date">${meal.date ? new Date(meal.date + 'T00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}) : ''}</span>
+          <div class="meal-actions">
+            <button class="event-mini-btn" onclick="editMeal('${meal.id}')" title="Edit">✏️</button>
+          </div>
+        </div>`;
+      grid.appendChild(card);
+    });
+  }
+
+  // ── Utilities ──
+  function formatDate(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2,'0');
+    const day = String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function fmt12(t) {
+    if (!t) return '';
+    const [h, m] = t.split(':').map(Number);
+    const ampm = h >= 12 ? 'PM' : 'AM';
+    return `${h % 12 || 12}:${String(m).padStart(2,'0')} ${ampm}`;
+  }
+</script>
+</body>
+</html>
