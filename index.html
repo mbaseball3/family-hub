@@ -1022,20 +1022,22 @@
 <!-- Firebase SDKs -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut as fbSignOut, onAuthStateChanged }
+  import { getAuth, signInAnonymously, signOut as fbSignOut, onAuthStateChanged }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, collection, doc, addDoc, setDoc, deleteDoc, onSnapshot, query, orderBy, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   // ── CONFIGURATION ── Replace with your Firebase project config ──
   const firebaseConfig = {
-  apiKey: "AIzaSyAsouMmCbYgQrkmh1mNcWVM0CchUqvTR-Y",
-  authDomain: "family-hub-d3dcc.firebaseapp.com",
-  projectId: "family-hub-d3dcc",
-  storageBucket: "family-hub-d3dcc.firebasestorage.app",
-  messagingSenderId: "153502606502",
-  appId: "1:153502606502:web:e005f88aaa8fd5dc18c067"
+apiKey: "AIzaSyAsouMmCbYgQrkmh1mNcWVM0CchUqvTR-Y",
+authDomain: "family-hub-d3dcc.firebaseapp.com",
+projectId: "family-hub-d3dcc",
+storageBucket: "family-hub-d3dcc.firebasestorage.app",
+messagingSenderId: "153502606502",
+appId: "1:153502606502:web:e005f88aaa8fd5dc18c067"
 };
+
+
 
   // ── ALLOWED EMAILS — add all family Google accounts ──
   const ALLOWED_EMAILS = [
@@ -1076,51 +1078,46 @@
   const PERSON_COLORS = { Payton: '#5b8dd9', Hailey: '#d45ba3', Aubrey: '#6abf8a', Daniel: '#e07b3c', Mom: '#9b6fd4' };
 
   // ── Auth ──
-  window.signInWithGoogle = () => {
-    signInWithRedirect(auth, provider);
+  // Family PIN — change this to your own secret PIN
+  const FAMILY_PIN = "smith2024";
+
+  window.submitPin = async () => {
+    const pin = document.getElementById('pin-input').value.trim();
+    if (pin === FAMILY_PIN) {
+      document.getElementById('access-denied').style.display = 'none';
+      document.getElementById('loading-screen').style.display = 'flex';
+      document.getElementById('auth-screen').style.display = 'none';
+      try {
+        await signInAnonymously(auth);
+      } catch(e) {
+        console.error(e);
+        document.getElementById('loading-screen').style.display = 'none';
+        document.getElementById('auth-screen').style.display = 'flex';
+      }
+    } else {
+      document.getElementById('access-denied').style.display = 'block';
+      document.getElementById('pin-input').value = '';
+    }
   };
 
-  window.signOut = () => fbSignOut(auth);
-
-  function showApp(user) {
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'flex';
-    document.getElementById('user-name').textContent = user.displayName?.split(' ')[0] || '';
-    document.getElementById('user-avatar').src = user.photoURL || '';
-    subscribeToData();
-  }
-
-  function showAuth(denied) {
-    document.getElementById('loading-screen').style.display = 'none';
+  window.signOut = async () => {
+    await fbSignOut(auth);
     document.getElementById('app').style.display = 'none';
     document.getElementById('auth-screen').style.display = 'flex';
-    if (denied) document.getElementById('access-denied').style.display = 'block';
-  }
-
-  let redirectHandled = false;
-
-  getRedirectResult(auth).then(result => {
-    redirectHandled = true;
-    if (result && result.user) {
-      if (ALLOWED_EMAILS.includes(result.user.email)) {
-        showApp(result.user);
-      } else {
-        fbSignOut(auth);
-        showAuth(true);
-      }
-    }
-  }).catch(e => {
-    redirectHandled = true;
-    console.error('Redirect error:', e);
-  });
+    document.getElementById('pin-input').value = '';
+  };
 
   onAuthStateChanged(auth, user => {
-    if (!redirectHandled) return;
-    if (user && ALLOWED_EMAILS.includes(user.email)) {
-      showApp(user);
-    } else if (!user) {
-      showAuth(false);
+    document.getElementById('loading-screen').style.display = 'none';
+    if (user) {
+      document.getElementById('auth-screen').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      document.getElementById('user-name').textContent = 'Family';
+      document.getElementById('user-avatar').style.display = 'none';
+      subscribeToData();
+    } else {
+      document.getElementById('auth-screen').style.display = 'flex';
+      document.getElementById('app').style.display = 'none';
     }
   });
 
