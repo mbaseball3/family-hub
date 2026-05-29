@@ -1029,18 +1029,18 @@
 
   // ── CONFIGURATION ── Replace with your Firebase project config ──
   const firebaseConfig = {
-    apiKey:            "AIzaSyAsouMmCbYgQrkmh1mNcWVM0CchUqvTR-Y",
-    authDomain:        "family-hub-d3dcc.firebaseapp.com",
-    projectId:         "family-hub-d3dcc",
-    storageBucket:     "family-hub-d3dcc.firebasestorage.app",
-    messagingSenderId: "153502606502",
-    appId:             "1:153502606502:web:e005f88aaa8fd5dc18c067"
-  };
+  apiKey: "AIzaSyAsouMmCbYgQrkmh1mNcWVM0CchUqvTR-Y",
+  authDomain: "family-hub-d3dcc.firebaseapp.com",
+  projectId: "family-hub-d3dcc",
+  storageBucket: "family-hub-d3dcc.firebasestorage.app",
+  messagingSenderId: "153502606502",
+  appId: "1:153502606502:web:e005f88aaa8fd5dc18c067"
+};
 
   // ── ALLOWED EMAILS — add all family Google accounts ──
   const ALLOWED_EMAILS = [
     "d.smith5165@gmail.com",
-    "REPLACE_WITH_WIFE_EMAIL@gmail.com"
+    "mismelissalynn13@gmail.com"
     // Add more as needed
   ];
 
@@ -1082,34 +1082,45 @@
 
   window.signOut = () => fbSignOut(auth);
 
-  // Handle the redirect result when returning from Google
+  function showApp(user) {
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    document.getElementById('user-name').textContent = user.displayName?.split(' ')[0] || '';
+    document.getElementById('user-avatar').src = user.photoURL || '';
+    subscribeToData();
+  }
+
+  function showAuth(denied) {
+    document.getElementById('loading-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('auth-screen').style.display = 'flex';
+    if (denied) document.getElementById('access-denied').style.display = 'block';
+  }
+
+  let redirectHandled = false;
+
   getRedirectResult(auth).then(result => {
-    if (result?.user) {
-      const email = result.user.email;
-      if (!ALLOWED_EMAILS.includes(email)) {
+    redirectHandled = true;
+    if (result && result.user) {
+      if (ALLOWED_EMAILS.includes(result.user.email)) {
+        showApp(result.user);
+      } else {
         fbSignOut(auth);
-        document.getElementById('loading-screen').style.display = 'none';
-        document.getElementById('auth-screen').style.display = 'flex';
-        document.getElementById('access-denied').style.display = 'block';
+        showAuth(true);
       }
     }
   }).catch(e => {
+    redirectHandled = true;
     console.error('Redirect error:', e);
-    document.getElementById('loading-screen').style.display = 'none';
-    document.getElementById('auth-screen').style.display = 'flex';
   });
 
   onAuthStateChanged(auth, user => {
-    document.getElementById('loading-screen').style.display = 'none';
+    if (!redirectHandled) return;
     if (user && ALLOWED_EMAILS.includes(user.email)) {
-      document.getElementById('auth-screen').style.display = 'none';
-      document.getElementById('app').style.display = 'flex';
-      document.getElementById('user-name').textContent = user.displayName?.split(' ')[0] || '';
-      document.getElementById('user-avatar').src = user.photoURL || '';
-      subscribeToData();
-    } else {
-      document.getElementById('auth-screen').style.display = 'flex';
-      document.getElementById('app').style.display = 'none';
+      showApp(user);
+    } else if (!user) {
+      showAuth(false);
     }
   });
 
